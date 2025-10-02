@@ -19,10 +19,16 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
 
-const allowedOrigins = [process.env.CLIENT_URL];
+// 1. Define allowed origins using environment variables for flexibility
+const allowedOrigins = [
+  process.env.CLIENT_URL, // For local development (e.g., http://localhost:5173)
+  process.env.CLIENT_URL_PROD, // For your live frontend on Render
+];
+
 app.use(
   cors({
     origin: (origin, callback) => {
+      // Allow requests if the origin is in our allowed list or has no origin (like Postman)
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
