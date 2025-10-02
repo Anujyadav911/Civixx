@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
 
-// 1. Define an array of all allowed frontend URLs
+// Define an array of all allowed frontend URLs
 const allowedOrigins = [
   process.env.CLIENT_URL, // Your local dev URL (e.g., http://localhost:5173)
   process.env.CLIENT_URL_PROD, // Your live Render frontend URL
@@ -27,17 +27,14 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    // 2. Update the origin function to check if the request origin is in the array
     origin: (origin, callback) => {
-      // Allow requests with no origin (like Postman or mobile apps)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg =
-          "The CORS policy for this site does not allow access from the specified Origin.";
-        return callback(new Error(msg), false);
+      // Allow requests if the origin is in our allowed list or has no origin (like Postman)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.error("CORS Error: Origin not allowed ->", origin); // Add this log for debugging
+        callback(new Error("Not allowed by CORS"));
       }
-      return callback(null, true);
     },
     credentials: true,
   })
