@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
-import axios from "axios";
+import api from "../Utils/api";
 
 const PETITION_CATEGORIES = [
   "Environment",
@@ -36,11 +36,8 @@ const CreatePetition = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/petitions/create",
-        formData,
-        { withCredentials: true }
-      );
+      const res = await api.post("/petitions/create", formData);
+
       if (res.status === 201) {
         toast.success("Petition created successfully!");
         navigate("/petitions");

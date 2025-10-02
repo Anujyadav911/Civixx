@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
-import axios from "axios";
+import api from "../Utils/api";
 import { Trash2, BarChart3 } from "lucide-react";
 
 const CreatePoll = () => {
@@ -56,11 +56,7 @@ const CreatePoll = () => {
     };
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/polls/create",
-        pollData,
-        { withCredentials: true }
-      );
+      const res = await api.post("/petitions/create", formData);
 
       if (res.status === 201) {
         toast.success("Poll created successfully!");

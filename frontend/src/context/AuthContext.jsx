@@ -1,13 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
+import api from "../Utils/api"; // 1. Import your central api client
 
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  // 1. On initial load, try to get the user from Session Storage.
-  // This provides an immediate, synchronous value for the UI.
   const [user, setUser] = useState(() => {
     try {
       const storedUser = sessionStorage.getItem("user");
@@ -19,26 +17,19 @@ export const AuthProvider = ({ children }) => {
 
   const [loading, setLoading] = useState(true);
 
-  // This effect runs only once to verify the session with the backend.
   useEffect(() => {
     const verifySession = async () => {
       try {
-        // The browser automatically sends the secure cookie.
-        const res = await axios.get("http://localhost:5000/api/auth/me", {
-          withCredentials: true,
-        });
+        // 2. Use 'api' and a relative path. 'withCredentials' is now handled automatically.
+        const res = await api.get("/auth/me");
 
-        // If the session is valid, update user data with the latest from the server.
         setUser(res.data);
         sessionStorage.setItem("user", JSON.stringify(res.data));
       } catch (err) {
-        // If the cookie is invalid or expired, the server will send a 401.
-        // In this case, we log the user out completely.
         console.log("No valid session found. Logging out.");
         setUser(null);
         sessionStorage.removeItem("user");
       } finally {
-        // The initial authentication check is now complete.
         setLoading(false);
       }
     };
@@ -53,11 +44,8 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.post(
-        "http://localhost:5000/api/auth/logout",
-        {},
-        { withCredentials: true }
-      );
+      // 3. Use 'api' for the logout request
+      await api.post("/auth/logout", {});
     } catch (err) {
       console.error("Logout failed:", err);
     } finally {

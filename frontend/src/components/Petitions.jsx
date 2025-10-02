@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
-import axios from "axios";
+import api from "../Utils/api";
 import { useNavigate, Link } from "react-router-dom";
 
 const Petitions = () => {
@@ -21,9 +21,8 @@ const Petitions = () => {
     const fetchPetitions = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("http://localhost:5000/api/petitions", {
-          withCredentials: true,
-        });
+        const res = await api.get("/petitions");
+
         setPetitions(res.data);
       } catch (err) {
         toast.error("Failed to fetch petitions.");
@@ -82,11 +81,7 @@ const Petitions = () => {
 
   const handleSign = async (petitionId) => {
     try {
-      const res = await axios.post(
-        `http://localhost:5000/api/petitions/${petitionId}/sign`,
-        {},
-        { withCredentials: true }
-      );
+      const res = await api.post(`/petitions/${petitionId}/sign`);
       setPetitions((prev) =>
         prev.map((p) => (p._id === petitionId ? res.data : p))
       );

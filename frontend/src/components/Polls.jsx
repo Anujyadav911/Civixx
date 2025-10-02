@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import axios from "axios";
+import api from "../Utils/api"; // 1. Import your central api client
 import { Plus, MapPin, Edit, Trash2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 const Polls = () => {
-  // 1. Get the loading state from AuthContext
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [polls, setPolls] = useState([]);
@@ -18,9 +17,8 @@ const Polls = () => {
     const fetchPolls = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("http://localhost:5000/api/polls", {
-          withCredentials: true,
-        });
+        // 2. Use 'api' and a relative path
+        const res = await api.get("/polls");
         setPolls(res.data);
       } catch (err) {
         toast.error("Failed to fetch polls.");
@@ -29,19 +27,15 @@ const Polls = () => {
       }
     };
 
-    // 2. Only fetch polls after the authentication check is complete
     if (!authLoading) {
       fetchPolls();
     }
-  }, [authLoading]); // 3. Rerun this effect when the authentication loading state changes
+  }, [authLoading]);
 
   const handleVote = async (pollId, optionId) => {
     try {
-      const res = await axios.post(
-        `http://localhost:5000/api/polls/${pollId}/vote`,
-        { optionId },
-        { withCredentials: true }
-      );
+      // 3. Use 'api' for the vote request
+      const res = await api.post(`/polls/${pollId}/vote`, { optionId });
       setPolls((prevPolls) =>
         prevPolls.map((p) => (p._id === pollId ? res.data : p))
       );
@@ -54,9 +48,8 @@ const Polls = () => {
   const handleDelete = async (pollId) => {
     if (window.confirm("Are you sure you want to delete this poll?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/polls/${pollId}`, {
-          withCredentials: true,
-        });
+        // 4. Use 'api' for the delete request
+        await api.delete(`/polls/${pollId}`);
         setPolls(polls.filter((p) => p._id !== pollId));
         toast.success("Poll deleted successfully.");
       } catch (err) {
@@ -158,6 +151,7 @@ const Polls = () => {
                 <h3 className="text-lg font-bold text-[#2D3E50] mb-4 pr-16">
                   {poll.question}
                 </h3>
+
                 <div className="space-y-3">
                   {poll.options.map((option) => {
                     const votePercentage =

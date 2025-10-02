@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import axios from "axios";
+import api from "../Utils/api"; // 1. Import your central api client
 import { toast } from "react-toastify";
 
 const SinglePetition = () => {
@@ -14,12 +14,8 @@ const SinglePetition = () => {
   useEffect(() => {
     const fetchPetition = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/petitions/${id}`,
-          {
-            withCredentials: true,
-          }
-        );
+        // 2. Use 'api' and a relative path
+        const res = await api.get(`/petitions/${id}`);
         setPetition(res.data);
       } catch (err) {
         toast.error("Failed to fetch petition details.");
@@ -38,9 +34,8 @@ const SinglePetition = () => {
       )
     ) {
       try {
-        await axios.delete(`http://localhost:5000/api/petitions/${id}`, {
-          withCredentials: true,
-        });
+        // 3. Use 'api' for the delete request
+        await api.delete(`/petitions/${id}`);
         toast.success("Petition deleted successfully.");
         navigate("/petitions");
       } catch (err) {
@@ -72,7 +67,6 @@ const SinglePetition = () => {
               {new Date(petition.createdAt).toLocaleDateString()}
             </p>
           </div>
-          {/* Show Edit/Delete buttons only if the user is the owner */}
           {isOwner && (
             <div className="flex space-x-2 flex-shrink-0">
               <Link

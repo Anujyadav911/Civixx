@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import axios from "axios";
+import api from "../Utils/api"; // 1. Import your central api client
 import { toast } from "react-toastify";
 
 const DashboardContent = () => {
@@ -16,12 +16,9 @@ const DashboardContent = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:5000/api/dashboard/stats",
-          {
-            withCredentials: true,
-          }
-        );
+        setLoading(true);
+        // 2. Use 'api' and a relative path
+        const res = await api.get("/dashboard/stats");
         setStats(res.data);
       } catch (err) {
         toast.error("Could not load dashboard stats.");

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../Utils/api"; // 1. Import your central api client
 import AuthLayout from "./AuthLayout";
 import { toast } from "react-toastify";
 
@@ -25,11 +25,9 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/register",
-        formData,
-        { withCredentials: true }
-      );
+      // 2. Use 'api' instead of 'axios' and a relative URL
+      const res = await api.post("/auth/register", formData);
+
       if (res.status === 201) {
         toast.success("Registration successful! Please log in.");
         navigate("/login");
@@ -43,7 +41,6 @@ const Register = () => {
 
   return (
     <AuthLayout>
-      {/* ✅ Reduced margin from mb-10 to mb-6 */}
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-slate-700 mb-1">
           Welcome to Civix
@@ -54,7 +51,6 @@ const Register = () => {
       </div>
 
       <form onSubmit={handleSubmit}>
-        {/* ✅ Reduced margin from mb-4 to mb-3 and padding from py-3 to py-2 */}
         <div className="mb-3">
           <input
             type="text"
@@ -103,7 +99,6 @@ const Register = () => {
           />
         </div>
 
-        {/* ✅ Reduced margin from mb-5 to mb-4 */}
         <div className="mb-4 px-2">
           <label className="block text-gray-500 text-sm mb-1">
             I am registering as:
@@ -140,7 +135,6 @@ const Register = () => {
           </div>
         </div>
 
-        {/* ✅ Reduced vertical margin from my-4 to my-2 */}
         <button
           type="submit"
           className="w-full py-3 bg-red-500 text-white rounded-full text-sm font-semibold my-2"
@@ -148,7 +142,6 @@ const Register = () => {
           Create Account
         </button>
 
-        {/* ✅ Reduced margin from mt-5 to mt-3 */}
         <div className="text-center text-gray-500 text-sm mt-3">
           Already have an account?{" "}
           <a

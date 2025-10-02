@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../Utils/api"; // 1. Import your central api client
 import { toast } from "react-toastify";
 
 const PETITION_CATEGORIES = [
@@ -27,10 +27,8 @@ const EditPetition = () => {
   useEffect(() => {
     const fetchPetition = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/petitions/${id}`,
-          { withCredentials: true }
-        );
+        // 2. Use 'api' and a relative path to fetch data
+        const res = await api.get(`/petitions/${id}`);
         setFormData({
           title: res.data.title,
           description: res.data.description,
@@ -52,9 +50,8 @@ const EditPetition = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/api/petitions/${id}`, formData, {
-        withCredentials: true,
-      });
+      // 3. Use 'api' for the update request
+      await api.put(`/petitions/${id}`, formData);
       toast.success("Petition updated successfully!");
       navigate(`/petitions/${id}`);
     } catch (err) {

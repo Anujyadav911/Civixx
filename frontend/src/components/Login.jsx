@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../Utils/api"; // 1. Import your central api client
 import { useAuth } from "../context/AuthContext";
 import AuthLayout from "./AuthLayout";
 import { toast } from "react-toastify";
@@ -25,16 +25,11 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
-        {
-          email: formData.email,
-          password: formData.password,
-        },
-        {
-          withCredentials: true, //correctly sends/receives cookies
-        }
-      );
+      // 2. Use 'api' instead of 'axios' and a relative URL
+      const res = await api.post("/auth/login", {
+        email: formData.email,
+        password: formData.password,
+      });
 
       if (res.data.user) {
         toast.success("Login successful!");
@@ -59,7 +54,6 @@ const Login = () => {
       </div>
 
       <form onSubmit={handleSubmit}>
-        {/* Email */}
         <div className="mb-4">
           <input
             type="email"
@@ -72,7 +66,6 @@ const Login = () => {
           />
         </div>
 
-        {/* Password */}
         <div className="mb-4">
           <input
             type="password"
@@ -85,7 +78,6 @@ const Login = () => {
           />
         </div>
 
-        {/* Forgot Password */}
         <div className="text-right mb-5 w-full">
           <a
             href="#"
@@ -95,7 +87,6 @@ const Login = () => {
           </a>
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           className="w-full py-3 bg-red-500 text-white rounded-full text-sm font-semibold cursor-pointer transition-all duration-300 my-4 hover:bg-red-600 hover:-translate-y-0.5 hover:shadow-[0_10px_20px_rgba(231,76,60,0.3)]"
@@ -103,7 +94,6 @@ const Login = () => {
           Login
         </button>
 
-        {/* Switch to Register */}
         <div className="text-center text-gray-500 text-sm mt-5">
           Don&apos;t have an account?{" "}
           <a
